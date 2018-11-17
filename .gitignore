@@ -1,0 +1,5 @@
+src/main/resources/config.properties
+.classpath
+.project
+.settings/
+target/
