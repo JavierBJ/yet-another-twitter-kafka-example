@@ -15,6 +15,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.InsertManyOptions;
 
 public class TweetsConsumer {
 	
@@ -47,10 +48,12 @@ public class TweetsConsumer {
 				for (ConsumerRecord<String, String> record : records) {
 					System.out.println("Offset: " + record.offset() + ", Key: " + record.key() + ", Value: " + record.value());
 					Document bson = Document.parse(record.value());
+					bson.put("_id", bson.get("id_str"));
 					documents.add(bson);
 				}
 				if (!documents.isEmpty()) {
-					collection.insertMany(documents);
+					/* Use InsertManyOptions with ordered=false to ignore duplicate inserts without crash */
+					collection.insertMany(documents, new InsertManyOptions().ordered(false));
 				}
 			}
 		} finally {
